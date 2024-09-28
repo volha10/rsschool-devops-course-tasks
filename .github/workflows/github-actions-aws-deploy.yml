@@ -1,0 +1,28 @@
+name: AWS Deploy
+run-name: Deploying to AWS
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "This job's status is ${{ job.status }}."
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This job's status is ${{ job.status }}."
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This job's status is ${{ job.status }}."
