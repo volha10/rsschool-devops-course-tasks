@@ -2,7 +2,7 @@
 # The workflow Creates static website using aws s3
 name: AWS example workflow
 on:
-  push:
+  pull_request:
     branches:
       - main
 
