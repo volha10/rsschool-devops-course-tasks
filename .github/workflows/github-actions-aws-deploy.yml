@@ -1,5 +1,6 @@
 name: AWS Deploy
 run-name: Deploying to AWS
+
 on:
   pull_request:
     branches:
@@ -14,7 +15,6 @@ permissions:
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,8 +22,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
-            aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -31,23 +31,60 @@ jobs:
       - name: Terraform format checking
         run: terraform fmt -check
 
+  terraform-init:
+    runs-on: ubuntu-latest
+    needs: terraform-fmt   # Wait for terraform-fmt job to finish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Terraform init
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    needs: terraform-init   # Wait for terraform-init job to finish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform plan
         run: terraform plan
 
-#      - id: plan
-#        run: terraform plan
-#
-#      - run: echo ${{ steps.plan.outputs.stdout }}
-#      - run: echo ${{ steps.plan.outputs.stderr }}
-#      - run: echo ${{ steps.plan.outputs.exitcode }}
+  terraform-apply:
+    runs-on: ubuntu-latest
+    needs: terraform-plan   # Wait for terraform-plan job to finish
+    if: github.event_name == 'push'   # Only apply on push to main, not pull request
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - id: apply
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform apply
         run: terraform apply -auto-approve
-
-      - run: echo ${{ steps.plan.outputs.stdout }}
-      - run: echo ${{ steps.plan.outputs.stderr }}
-      - run: echo ${{ steps.plan.outputs.exitcode }}
-
