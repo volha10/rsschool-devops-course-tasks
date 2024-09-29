@@ -53,6 +53,7 @@ jobs:
       - name: Terraform plan
         env:
           TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_aws_sample_bucket_name: ${{ secrets.AWS_SAMPLE_BUCKET }}
         run: terraform plan
 
   terraform-apply:
@@ -78,4 +79,5 @@ jobs:
       - name: Terraform apply
         env:
           TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+          TF_VAR_aws_sample_bucket_name: ${{ secrets.AWS_SAMPLE_BUCKET }}
         run: terraform apply -auto-approve
