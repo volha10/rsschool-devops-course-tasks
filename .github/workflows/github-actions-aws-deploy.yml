@@ -51,6 +51,8 @@ jobs:
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
 
       - name: Terraform plan
+        env:
+          TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
         run: terraform plan
 
   terraform-apply:
@@ -74,4 +76,6 @@ jobs:
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
 
       - name: Terraform apply
+        env:
+          TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
         run: terraform apply -auto-approve
