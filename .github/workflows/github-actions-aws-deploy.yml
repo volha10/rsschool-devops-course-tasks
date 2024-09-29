@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write   # This is required for requesting the JWT
+
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
