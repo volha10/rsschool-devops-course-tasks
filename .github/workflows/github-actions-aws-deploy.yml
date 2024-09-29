@@ -33,7 +33,7 @@ jobs:
 
   terraform-plan:
     runs-on: ubuntu-latest
-    needs: terraform-init   # Wait for terraform-init job to finish
+    needs: terraform-check   # Wait for terraform-check job to finish
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
