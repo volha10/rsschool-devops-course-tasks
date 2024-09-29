@@ -11,18 +11,25 @@ on:
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
+      - name: Checkout code
         uses: actions/checkout@v4
-      - run: echo "This job's status is ${{ job.status }}."
 
-  terraform-plan:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "This job's status is ${{ job.status }}."
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+            aws-region: ${{ secrets.AWS_REGION }}
 
-  terraform-apply:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "This job's status is ${{ job.status }}."
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform format checking
+        run: terraform fmt -check
+
+      - name: Terraform init shared states
+        run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
+
+      - name: Terraform plan shared states
+        run: terraform plan
