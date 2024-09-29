@@ -36,3 +36,6 @@ jobs:
 
       - name: Terraform plan shared states
         run: terraform plan
+
+      - name: Terraform apply shared states
+        run: terraform apply
