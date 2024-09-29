@@ -31,11 +31,20 @@ jobs:
       - name: Terraform format checking
         run: terraform fmt -check
 
-      - name: Terraform init shared states
+      - name: Terraform init
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
 
-      - name: Terraform plan shared states
+      - id: plan
         run: terraform plan
 
-      - name: Terraform apply shared states
+      - run: echo ${{ steps.plan.outputs.stdout }}
+      - run: echo ${{ steps.plan.outputs.stderr }}
+      - run: echo ${{ steps.plan.outputs.exitcode }}
+
+      - id: apply
         run: terraform apply
+
+      - run: echo ${{ steps.plan.outputs.stdout }}
+      - run: echo ${{ steps.plan.outputs.stderr }}
+      - run: echo ${{ steps.plan.outputs.exitcode }}
+
