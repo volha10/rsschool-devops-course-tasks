@@ -47,18 +47,20 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Cache Terraform folder
-        uses: actions/cache@v3
-        with:
-          path: .terraform
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
+#      - name: Cache Terraform folder
+#        uses: actions/cache@v3
+#        with:
+#          path: .terraform
+#          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+#          restore-keys: |
+#            ${{ runner.os }}-terraform-
 
       - name: Terraform init
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BACKEND_S3 }}" -backend-config="region=${{ secrets.AWS_REGION }}"
 
+      # Only upload the directory if it exists
       - name: Save Terraform init state
+        if: success() && steps.terraform-init.outputs.directory_exists == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: terraform-init
