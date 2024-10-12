@@ -22,6 +22,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          # todo: test new role
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
           aws-region: ${{ secrets.AWS_REGION }}
 
