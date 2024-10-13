@@ -37,7 +37,7 @@ Replace your-bucket-name with the name of your S3 bucket and your-region with yo
 Once inside the project directory, initialize Terraform. This will download the necessary provider plugins and set up the backend.
 
 ```bash
-terraform init -backend-config="bucket=$TF_VAR_aws_s3_bucket_name" -backend-config="region=$TF_VAR_aws_s3_bucket_region"
+terraform init -backend-config="region=$TF_VAR_aws_s3_bucket_region" -migrate-state
 ```
 
 ## Terraform Plan
