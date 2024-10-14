@@ -3,6 +3,6 @@ resource "aws_internet_gateway" "internet_gateway" {
 
   tags = {
     Name = "internet-gateway"
-    App = "rsschl"
+    App  = "rsschl"
   }
 }

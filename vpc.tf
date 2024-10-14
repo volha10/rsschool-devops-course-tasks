@@ -3,6 +3,6 @@ resource "aws_vpc" "vpc_with_public_subnets" {
 
   tags = {
     Name = "vpc-with-public-subnets"
-    App = "rsschl"
+    App  = "rsschl"
   }
 }

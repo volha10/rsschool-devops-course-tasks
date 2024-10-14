@@ -3,7 +3,7 @@ resource "aws_route_table" "public_rt" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.example.id
+    gateway_id = aws_internet_gateway.internet_gateway.id
   }
 
   route {
@@ -13,7 +13,7 @@ resource "aws_route_table" "public_rt" {
 
   tags = {
     Name = "public-rt"
-    App = "rsschl"
+    App  = "rsschl"
   }
 }
 
