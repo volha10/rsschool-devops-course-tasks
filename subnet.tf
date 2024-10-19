@@ -19,3 +19,24 @@ resource "aws_subnet" "public_subnet_2" {
     App  = "rsschl"
   }
 }
+
+
+resource "aws_subnet" "private_subnet_1" {
+  vpc_id     = aws_vpc.vpc_with_public_subnets.id
+  cidr_block = "10.0.3.0/24"
+
+  tags = {
+    Name = "private-subnet-1"
+    App  = "rsschl"
+  }
+}
+
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id     = aws_vpc.vpc_with_public_subnets.id
+  cidr_block = "10.0.4.0/24"
+
+  tags = {
+    Name = "private-subnet-2"
+    App  = "rsschl"
+  }
+}
