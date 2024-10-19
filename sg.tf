@@ -77,10 +77,10 @@ resource "aws_vpc_security_group_ingress_rule" "allow_inbound_traffic_inside_vpc
   }
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_outbound_traffic_inside_vpc" {
-  description       = "Allow all outbound traffic inside vpc"
+resource "aws_vpc_security_group_egress_rule" "allow_outbound_traffic_to_anywhere" {
+  description       = "Allow all outbound traffic to anywhere"
   security_group_id = aws_security_group.allow_internal_inbound_outbound_traffic.id
-  cidr_ipv4         = aws_vpc.vpc_with_public_subnets.cidr_block
+  cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 
   tags = {
