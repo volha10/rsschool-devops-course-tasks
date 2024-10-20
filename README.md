@@ -37,7 +37,7 @@ Replace your-bucket-name with the name of your S3 bucket and your-region with yo
 Once inside the project directory, initialize Terraform. This will download the necessary provider plugins and set up the backend.
 
 ```bash
-terraform init -backend-config="bucket=$TF_VAR_aws_s3_bucket_name" -backend-config="region=$TF_VAR_aws_s3_bucket_region"
+terraform init -backend-config="bucket=$TF_VAR_aws_s3_bucket_name" -backend-config="region=$TF_VAR_aws_s3_bucket_region" -migrate-state
 ```
 
 ## Terraform Plan
@@ -56,7 +56,89 @@ terraform apply
 ```
 You will be asked to confirm the action. Type yes to proceed.
 
+## Terraform Destroy
 
+```bash
+terraform destroy
+```
+You will be asked to confirm the action. Type yes to proceed.
+
+## SSH Configuration for Connecting to Private Instances via Bastion Host
+
+A bastion host serves as a gateway, allowing secure access to instances in private subnets.
+
+### Prerequisites
+- Bastion Host: An EC2 instance in a public subnet, accessible from outside the VPC.
+- Private Instance: An EC2 instance in a private subnet, accessible only via the bastion host.
+- SSH Key: The private key (.pem or .ppk file) used to connect to both instances.
+- Bastion Host Public IP: The public IP address of the bastion host.
+- Private Instance Private IP: The private IP address of the private instance.
+- SSH Agent Forwarding: SSH agent must be running locally if key forwarding is required.
+
+### Step 1: Configure SSH
+#### 1. Open SSH Config File. 
+SSH configuration is stored in the file ~/.ssh/config on local machine. If this file does not exist, create it.
+
+```
+vim ~/.ssh/config
+```
+
+#### 2. Add the Bastion and Private Instance Configuration
+
+Add the following configuration to the ~/.ssh/config file:
+
+```
+# Bastion Host configuration
+Host bastion
+    HostName <BASTION_PUBLIC_IP>
+    User ec2-user
+    IdentityFile ~/.ssh/your-key.pem
+    ForwardAgent yes
+
+# Private Instance configuration
+Host private-instance
+    HostName <PRIVATE_INSTANCE_PRIVATE_IP>
+    User ec2-user
+    IdentityFile ~/.ssh/your-key.pem
+    ProxyJump bastion
+```
+
+- Replace <BASTION_PUBLIC_IP> with the public IP of your bastion host.
+- Replace <PRIVATE_INSTANCE_PRIVATE_IP> with the private IP of your private instance.
+- Replace ~/.ssh/your-key.pem with the path to your SSH key file.
+
+The ProxyJump bastion command is used to route connections to the private instance through the bastion host.
+
+### Step 2: Enable SSH Agent Forwarding
+
+To securely forward the SSH key through the bastion host, enable SSH agent forwarding by adding ForwardAgent yes to the bastion block.
+
+To start the SSH agent and add the private key:
+
+```
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/your-key.pem
+```
+
+### Step 3: Set SSH Key Permissions
+Ensure that only the owner can read the private key file:
+
+```
+chmod 400 ~/.ssh/your-key.pem
+```
+
+### Example
+Test the connection to the bastion host:
+
+```
+ssh bastion
+```
+
+Test the connection to the private instance through the bastion host:
+
+```
+ssh private-instance
+```
 
 
 
