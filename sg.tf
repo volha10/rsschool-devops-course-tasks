@@ -38,7 +38,6 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ping_to_bastion" {
   }
 }
 
-
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_traffic_from_bastion" {
   description       = "Allow all outbound traffic to anywhere, e.g. ping private hosts inside vpc or ping outside vpc"
   security_group_id = aws_security_group.bastion_sg.id
@@ -50,6 +49,18 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_traffic_from_b
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allow_k8s_traffic" {
+  description       = "Allow k8s traffic"
+  security_group_id = aws_security_group.bastion_sg.id
+  ip_protocol       = "tcp"
+  from_port         = 6443
+  to_port           = 6443
+  cidr_ipv4         = "0.0.0.0/0"
+
+  tags = {
+    App = "rsschl"
+  }
+}
 
 resource "aws_security_group" "allow_internal_inbound_and_outbound_traffic" {
   name        = "allow-internal-inbound-and-outbound-traffic"
