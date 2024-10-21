@@ -9,6 +9,7 @@ Before getting started, ensure you have the following tools installed on your lo
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Terraform](https://www.terraform.io/downloads.html)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/#install-with-homebrew-on-macos) (The Kubernetes command-line tool)
 
 Make sure your AWS CLI is configured with the necessary credentials:
 
@@ -140,5 +141,66 @@ Test the connection to the private instance through the bastion host:
 ssh private-instance
 ```
 
+## Kubernetes (K8s) Cluster Setup and Deployment Using k3s
+K3s is a lightweight Kubernetes distribution ideal for resource-constrained environments.
+
+### Prerequisites
+
+- Bastion Host Security Group:
+    - Allow inbound SSH (port 22) traffic from your local machine’s IP address.
+- Private Host (K3s server) Security Group:
+    - Allow inbound SSH (port 22) from the bastion host.
+    - Allow inbound traffic on port 6443 from the bastion host (K3s API port).
+
+### Step 1: Install k3s on the Private Host (K3s server)
+
+#### 1. SSH into the private host via the bastion:
+
+```bash
+ssh -J ec2-user@bastion ec2-user@private-instance
+```
+
+#### 2. Install k3s on the private server:
+
+```
+curl -sfL https://get.k3s.io | sh -
+```
+
+#### 3. Check if K3s is running:
+
+```
+sudo k3s kubectl get nodes
+```
+
+You should see the K3s node listed.
 
 
+### Step 2: Set Up SSH Tunnel to Access K3s from Local Machine
+On your local machine, set up an SSH tunnel to access the K3s server via the bastion:
+
+```
+ssh -L 6443:k3s-private-ip:6443 ec2-user@bastion -N
+```
+
+Replace k3s-private-ip with the actual IP address.
+Leave the SSH tunnel running in the background.
+
+
+### Step 3: Access K3s from Local Machine
+#### 1. Configure kubectl on your local machine to connect to K3s. Copy the kubeconfig from the K3s server:
+
+```
+scp -i key.pem ec2-user@bastion-public-ip:/etc/rancher/k3s/k3s.yaml ~/k3s-config.yaml
+```
+
+#### 2. Edit the k3s-config.yaml on your local machine:
+
+Replace the server address with https://127.0.0.1:6443.
+Run kubectl commands on your local machine:
+
+```
+EXPORT KUBECONFIG=~/.kube/config
+kubectl get nodes
+```
+
+This command should now show the K3s node running.
