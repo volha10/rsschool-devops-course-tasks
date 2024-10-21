@@ -51,8 +51,8 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_traffic_from_b
 }
 
 
-resource "aws_security_group" "allow_internal_inbound_outbound_traffic" {
-  name        = "allow-internal-inbound-outbound-traffic"
+resource "aws_security_group" "allow_internal_inbound_and_outbound_traffic" {
+  name        = "allow-internal-inbound-and-outbound-traffic"
   description = "Allow ssh, ping inside vpc"
   vpc_id      = aws_vpc.main_vpc.id
 
@@ -68,7 +68,7 @@ resource "aws_security_group" "allow_internal_inbound_outbound_traffic" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_inbound_traffic_inside_vpc" {
   description       = "Allow all inbound traffic inside vpc"
-  security_group_id = aws_security_group.allow_internal_inbound_outbound_traffic.id
+  security_group_id = aws_security_group.allow_internal_inbound_and_outbound_traffic.id
   ip_protocol       = "-1"
   cidr_ipv4         = aws_vpc.main_vpc.cidr_block
 
@@ -79,7 +79,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_inbound_traffic_inside_vpc
 
 resource "aws_vpc_security_group_egress_rule" "allow_outbound_traffic_to_anywhere" {
   description       = "Allow all outbound traffic to anywhere"
-  security_group_id = aws_security_group.allow_internal_inbound_outbound_traffic.id
+  security_group_id = aws_security_group.allow_internal_inbound_and_outbound_traffic.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 
