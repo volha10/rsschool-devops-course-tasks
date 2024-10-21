@@ -1,6 +1,6 @@
 resource "aws_security_group" "bastion_sg" {
   name        = "bastion-sg"
-  description = "Allow ssh, ping from anywhere and all outbound traffic"
+  description = "Allow ssh, ping, k8s traffic from anywhere and all outbound traffic"
   vpc_id      = aws_vpc.main_vpc.id
 
   timeouts {
@@ -38,17 +38,6 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ping_to_bastion" {
   }
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_traffic_from_bastion" {
-  description       = "Allow all outbound traffic to anywhere, e.g. ping private hosts inside vpc or ping outside vpc"
-  security_group_id = aws_security_group.bastion_sg.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1"
-
-  tags = {
-    App = "rsschl"
-  }
-}
-
 resource "aws_vpc_security_group_ingress_rule" "allow_k8s_traffic" {
   description       = "Allow k8s traffic"
   security_group_id = aws_security_group.bastion_sg.id
@@ -61,6 +50,18 @@ resource "aws_vpc_security_group_ingress_rule" "allow_k8s_traffic" {
     App = "rsschl"
   }
 }
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_traffic_from_bastion" {
+  description       = "Allow all outbound traffic to anywhere, e.g. ping private hosts inside vpc or ping outside vpc"
+  security_group_id = aws_security_group.bastion_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+
+  tags = {
+    App = "rsschl"
+  }
+}
+
 
 resource "aws_security_group" "allow_internal_inbound_and_outbound_traffic" {
   name        = "allow-internal-inbound-and-outbound-traffic"
