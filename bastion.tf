@@ -17,6 +17,7 @@ resource "aws_instance" "bastion" {
 }
 
 resource "aws_eip" "bastion_eip" {
-  instance = aws_instance.bastion.id
-  domain   = "vpc"
+  instance   = aws_instance.bastion.id
+  domain     = "vpc"
+  depends_on = [aws_internet_gateway.internet_gateway]
 }
