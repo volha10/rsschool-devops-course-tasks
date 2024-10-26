@@ -1,8 +1,8 @@
-resource "aws_vpc" "vpc_with_public_subnets" {
+resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "vpc-with-public-subnets"
+    Name = "main-vpc"
     App  = "rsschl"
   }
 }
