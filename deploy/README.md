@@ -20,9 +20,3 @@ STATUS: deployed
 REVISION: 1
 ```
 
-Expose Jenkins service:
-```
-minikube service jenkins -n jenkins 
-```
-
-This command will open a web browser with the Jenkins URL.
