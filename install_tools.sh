@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
 
@@ -22,7 +24,6 @@ helm upgrade --install release-1 oci://registry-1.docker.io/bitnamicharts/kube-p
   --set prometheus.service.type=NodePort \
   --set prometheus.service.nodePorts.http=30090 \
   -n monitoring
-
 
 sleep 100
 
