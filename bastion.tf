@@ -6,6 +6,8 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   key_name               = "Ec2AccessForRsSchool"
 
+  user_data = "${file("install_tools.sh")}"
+
   lifecycle {
     replace_triggered_by = [aws_security_group.bastion_sg]
   }

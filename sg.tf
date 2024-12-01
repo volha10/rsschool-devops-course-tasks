@@ -38,6 +38,32 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ping_to_bastion" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allow_python_app_traffic" {
+  description       = "Allow python app k8s access from anywhere to bastion host"
+  security_group_id = aws_security_group.bastion_sg.id
+  ip_protocol       = "tcp"
+  from_port         = 30080
+  to_port           = 30080
+  cidr_ipv4         = "0.0.0.0/0"
+
+  tags = {
+    App = "rsschl"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_jenkins_traffic" {
+  description       = "Allow jenkins access from anywhere to bastion host"
+  security_group_id = aws_security_group.bastion_sg.id
+  ip_protocol       = "tcp"
+  from_port         = 8080
+  to_port           = 8080
+  cidr_ipv4         = "0.0.0.0/0"
+
+  tags = {
+    App = "rsschl"
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "allow_k8s_traffic" {
   description       = "Allow k8s traffic"
   security_group_id = aws_security_group.bastion_sg.id
