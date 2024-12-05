@@ -204,3 +204,24 @@ kubectl get nodes
 ```
 
 This command should now show the K3s node running.
+
+### Step 4: Deploy Prometheus
+Create namespace:
+
+```
+kubectl create namespace monitoring 
+```
+
+Install Prometheus:
+```
+helm upgrade --install release-1 oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
+  --set prometheus.service.type=NodePort \
+  --set prometheus.service.nodePorts.http=30090 \
+  -n monitoring
+```
+
+Verify deployment:
+
+```
+kubectl get all -n monitoring
+```
