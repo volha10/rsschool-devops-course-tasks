@@ -13,6 +13,10 @@ on:
       run-terraform-apply:
         description: "Run Terraform Apply? (yes/no)"
         required: true
+        type: choice
+        options:
+          - yes
+          - no
         default: "no"
 
 permissions:
