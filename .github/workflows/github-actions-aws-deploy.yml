@@ -8,6 +8,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      run-terraform-apply:
+        description: "Run Terraform Apply? (yes/no)"
+        required: true
+        default: "no"
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -60,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: terraform-plan   # Wait for terraform-plan job to finish
     #if: github.event_name == 'push'   # Only apply on push to main, not pull request
+    if: ${{ github.event.inputs.run-terraform-apply == 'yes' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
