@@ -30,6 +30,15 @@ on:
         description: 'Environment to run tests against'
         type: environment
         required: true
+
+      run-terraform-apply:
+        description: "Run Terraform Apply? (yes/no)"
+        required: true
+        type: choice
+        options:
+          - yes
+          - no
+        default: "no"
         
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
