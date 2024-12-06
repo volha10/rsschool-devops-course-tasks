@@ -36,8 +36,8 @@ on:
         required: true
         type: choice
         options:
-          - yes
-          - no
+          - "yes"
+          - "no"
         default: "no"
         
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
