@@ -26,7 +26,7 @@ permissions:
 jobs:
   install:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.run-terraform-apply == 'yes' }}
+    if: ${{ github.event.inputs.run-software-installation == 'yes' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
