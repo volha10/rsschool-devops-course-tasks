@@ -33,5 +33,5 @@ jobs:
       - name: Run installation script
         run: |
           ls -l
-          bash install-tools.sh
+          bash install_tools.sh
 
