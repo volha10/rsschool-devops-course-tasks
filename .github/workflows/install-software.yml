@@ -1,7 +1,6 @@
 name: Install Software
 run-name: Installing Software to AWS
 
-# Controls when the workflow will run
 on:
   push:
     branches: [ "main" ]
@@ -30,8 +29,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Run installation script
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Run software installation script
         run: |
-          ls -l
-          bash install_tools.sh
+          aws ssm send-command \
+            --targets "Key=instanceIds,Values=${{ secrets.AWS_EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunInstallSoftwareScript" \
+            --comment "Running install software script via GHA" \
+            --parameters '{"commands":["bash install_tools.sh"]}' \
+            --output text
 
