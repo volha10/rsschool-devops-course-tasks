@@ -31,5 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run installation script
-        run: bash install-tools.sh
+        run: |
+          ls -l
+          bash install-tools.sh
 
