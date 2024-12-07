@@ -39,7 +39,7 @@ jobs:
       - name: Run software installation script
         run: |
           aws ssm send-command \
-            --targets "Key=instanceIds,Values=i-0abcd1234efgh5678" \
+            --targets "Key=instanceIds,Values=${{ secrets.AWS_EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunInstallSoftwareScript" \
             --comment "Running install software script via GHA" \
             --parameters '{"commands":["bash install_tools.sh"]}' \
