@@ -30,18 +30,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_DEPLOY }}/GithubActionsRole
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Run software installation script
+      - name: Add SSH Key
         run: |
-          aws ssm send-command \
-            --targets "Key=instanceIds,Values=${{ secrets.AWS_EC2_INSTANCE_ID }}" \
-            --document-name "AWS-RunInstallSoftwareScript" \
-            --comment "Running install software script via GHA" \
-            --parameters '{"commands":["bash install_tools.sh"]}' \
-            --output text
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
+      - name: Run script on EC2
+        run: ssh -o StrictHostKeyChecking=no ec2-user@{{ secrets.AWS_EC2_PUBLIC_IP }} 'bash -s' < install_tools.sh
