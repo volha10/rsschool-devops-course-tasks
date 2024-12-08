@@ -20,7 +20,7 @@ chmod 700 get_helm.sh
 # Install Prometheus.
 kubectl create namespace monitoring
 
-helm upgrade --install release-1 oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
+helm upgrade --install prometheus oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
   --set prometheus.service.type=NodePort \
   --set prometheus.service.nodePorts.http=30090 \
   -n monitoring
@@ -28,4 +28,17 @@ helm upgrade --install release-1 oci://registry-1.docker.io/bitnamicharts/kube-p
 sleep 100
 
 kubectl get all -n monitoring
+
+kubectl create secret generic grafana-admin-secret \
+  --from-literal=password=${{ secrets.GRAFANA_ADMIN_PASSWORD }} \
+  --namespace monitoring
+
+helm upgrade --install grafana \
+    --values grafana/values.yml \
+    --namespace monitoring \
+    oci://registry-1.docker.io/bitnamicharts/grafana
+
+sleep 100
+
+kubectl get pods -n monitoring
 

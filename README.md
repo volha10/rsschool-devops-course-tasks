@@ -207,7 +207,10 @@ kubectl get nodes
 
 This command should now show the K3s node running.
 
-### Step 4: Deploy Prometheus
+## Prometheus Deployment 
+
+Prometheus is an open source monitoring and alerting system. It enables sysadmins to monitor their infrastructures by collecting metrics from configured targets at given intervals.
+
 Create namespace:
 
 ```
@@ -216,7 +219,7 @@ kubectl create namespace monitoring
 
 Install Prometheus:
 ```
-helm upgrade --install release-1 oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
+helm upgrade --install prometheus oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
   --set prometheus.service.type=NodePort \
   --set prometheus.service.nodePorts.http=30090 \
   -n monitoring
@@ -227,3 +230,46 @@ Verify deployment:
 ```
 kubectl get all -n monitoring
 ```
+
+To access prometheus locally use following command: 
+
+```commandline
+minikube service prometheus-kube-prometheus-prometheus -n monitoring
+```
+
+## Grafana Setup 
+
+Grafana is an open source metric analytics and visualization suite for visualizing time series data that supports various types of data sources.
+
+### Step 1. Integrate Prometheus with Grafana
+
+Create secret:
+
+```commandline
+kubectl create secret generic grafana-admin-secret \
+  --from-literal=password=SecurePassword123 \
+  --namespace monitoring
+```
+
+Install Grafana chart:
+
+```commandline
+helm upgrade --install grafana \
+    --values grafana/values.yml \
+    --namespace monitoring \
+    oci://registry-1.docker.io/bitnamicharts/grafana
+```
+> **Note**: For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana
+
+Verify deployment:
+
+```
+kubectl get all -n monitoring
+```
+
+To access grafana locally use following command: 
+
+```commandline
+minikube service grafana -n monitoring
+```
+
