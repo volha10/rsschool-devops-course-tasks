@@ -254,12 +254,14 @@ kubectl create secret generic grafana-admin-secret \
 Install Grafana chart:
 
 ```commandline
-helm upgrade --install grafana \
+helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
     --values grafana/values.yml \
     --namespace monitoring \
-    oci://registry-1.docker.io/bitnamicharts/grafana
+    --set service.type=NodePort \
+    --set service.nodePorts.grafana=30030 \ 
 ```
-> **Note**: For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana
+> **Note**: Replace <PROMETHEUS_HOST> with http://minikube_ip:30090 for local deployment.  
+> For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana
 
 Verify deployment:
 
@@ -273,3 +275,15 @@ To access grafana locally use following command:
 minikube service grafana -n monitoring
 ```
 
+### Step 2. Dashboard Creation
+
+Access the Grafana Dashboard:
+
+```commandline
+http://<grafana-host>:<port>
+```
+Replace <grafana-host> and <port> with your Grafana's host (e.g., node IP) and port (e.g., 3000).
+
+Log in using your Grafana admin credentials.
+
+Then go to Dashboards > New Dashboard > Import dashboard > Select dashboard_layout.json.
