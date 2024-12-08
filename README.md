@@ -144,6 +144,8 @@ ssh private-instance
 ## Kubernetes (K8s) Cluster Setup and Deployment Using k3s
 K3s is a lightweight Kubernetes distribution ideal for resource-constrained environments.
 
+<img alt="k8s.png" src="diagrams/k8s.png" width="500"/>
+
 ### Prerequisites
 
 - Bastion Host Security Group:
