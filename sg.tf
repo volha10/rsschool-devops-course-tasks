@@ -51,8 +51,21 @@ resource "aws_vpc_security_group_ingress_rule" "allow_python_app_traffic" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allow_prometheus_traffic" {
+  description       = "Allow prometheus access from anywhere to prometheus host"
+  security_group_id = aws_security_group.bastion_sg.id
+  ip_protocol       = "tcp"
+  from_port         = 30090
+  to_port           = 30090
+  cidr_ipv4         = "0.0.0.0/0"
+
+  tags = {
+    App = "rsschl"
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "allow_jenkins_traffic" {
-  description       = "Allow jenkins access from anywhere to bastion host"
+  description       = "Allow jenkins access from anywhere to jenkins host"
   security_group_id = aws_security_group.bastion_sg.id
   ip_protocol       = "tcp"
   from_port         = 8080
