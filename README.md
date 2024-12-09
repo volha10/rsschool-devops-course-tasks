@@ -258,7 +258,7 @@ helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana 
     --values grafana/values.yml \
     --namespace monitoring \
     --set service.type=NodePort \
-    --set service.nodePorts.grafana=30030 \ 
+    --set service.nodePorts.grafana=31030 
 ```
 > **Note**: Replace <PROMETHEUS_HOST> with http://minikube_ip:30090 for local deployment.  
 > For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana

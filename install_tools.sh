@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Function to check if a required environment variable is set
+check_env_var() {
+  if [ -z "$1" ]; then
+    echo "ERROR: Environment variable $2 is not set!"
+    exit 1
+  fi
+}
+
+# Check required environment variables.
+check_env_var "$GRAFANA_ADMIN_PASSWORD" "GRAFANA_ADMIN_PASSWORD"
+
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
 
@@ -30,14 +41,14 @@ sleep 100
 kubectl get all -n monitoring
 
 kubectl create secret generic grafana-admin-secret \
-  --from-literal=password=${{ secrets.GRAFANA_ADMIN_PASSWORD }} \
+  --from-literal=password="$GRAFANA_ADMIN_PASSWORD" \
   --namespace monitoring
 
 helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
     --values grafana/values.yml \
     --namespace monitoring \
     --set service.type=NodePort \
-    --set service.nodePorts.grafana=30030 \
+    --set service.nodePorts.grafana=31030
 
 sleep 100
 
