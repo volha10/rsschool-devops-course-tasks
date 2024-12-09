@@ -40,7 +40,7 @@ jobs:
         run: |
           mv grafana/values.yml grafana_values.yml
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} \
-            'ls /home/ec2-user/grafana_values.yml && mv /home/ec2-user/grafana_values.yml /home/ec2-user/grafana_values_$(date +\%Y\%m\%d\%H\%M\%S).yml  || echo "File not found, skipping backup'
+            'ls /home/ec2-user/grafana_values.yml && mv /home/ec2-user/grafana_values.yml /home/ec2-user/grafana_values_$(date +\%Y\%m\%d\%H\%M\%S).yml  || echo "File not found, skipping backup"'
 
       - name: Copy new grafana values to EC2
         run: |
