@@ -37,4 +37,4 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: Run script on EC2
-        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} 'bash -s' < install_tools.sh
+        run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} 'bash -s' < .github/scripts/install_tools.sh
