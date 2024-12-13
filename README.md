@@ -9,7 +9,11 @@ Before getting started, ensure you have the following tools installed on your lo
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Terraform](https://www.terraform.io/downloads.html)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [K3s](https://k3s.io/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/#install-with-homebrew-on-macos) (The Kubernetes command-line tool)
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) (For the local development)
+- [Helm](https://helm.sh/docs/intro/install/)
+> **Note**: K3s includes `kubectl` by default, so installing `kubectl` separately is optional.
 
 Make sure your AWS CLI is configured with the necessary credentials:
 
