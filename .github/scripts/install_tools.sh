@@ -44,8 +44,12 @@ kubectl create secret generic grafana-admin-secret \
   --from-literal=password="$GRAFANA_ADMIN_PASSWORD" \
   --namespace monitoring
 
+kubectl create configmap grafana-dashboards \
+  --from-file=grafana/dashboard_layout.json \
+  -n monitoring
+
 helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --values grafana_values.yml \
+    --values grafana/values.yml \
     --namespace monitoring \
     --set service.type=NodePort \
     --set service.nodePorts.grafana=31030
