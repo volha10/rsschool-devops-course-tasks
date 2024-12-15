@@ -303,4 +303,5 @@ Replace <grafana-host> and <port> with your Grafana's host (e.g., node IP) and p
 
 Log in using your Grafana admin credentials.
 
-Then go to Dashboards > New Dashboard > Import dashboard > Select dashboard_layout.json.
+Then go to Dashboards > New Dashboard > Import dashboard > Select your_dashboard_layout.json to import existing dashboard
+or Dashboards > New Dashboard > Add visualization to create new dashboard.
