@@ -150,10 +150,6 @@
   "templating": {
     "list": []
   },
-  "time": {
-    "from": "2024-12-08T13:58:23.795Z",
-    "to": "2024-12-09T01:58:23.795Z"
-  },
   "timepicker": {},
   "timezone": "browser",
   "title": "basic-metrics-visualization",
