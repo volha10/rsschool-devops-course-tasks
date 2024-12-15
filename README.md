@@ -217,12 +217,12 @@ Prometheus is an open source monitoring and alerting system. It enables sysadmin
 
 Create namespace:
 
-```
+```bash
 kubectl create namespace monitoring 
 ```
 
 Install Prometheus:
-```
+```bash
 helm upgrade --install prometheus oci://registry-1.docker.io/bitnamicharts/kube-prometheus \
   --set prometheus.service.type=NodePort \
   --set prometheus.service.nodePorts.http=30090 \
@@ -231,13 +231,13 @@ helm upgrade --install prometheus oci://registry-1.docker.io/bitnamicharts/kube-
 
 Verify deployment:
 
-```
+```bash
 kubectl get all -n monitoring
 ```
 
 To access prometheus locally use following command: 
 
-```commandline
+```bash
 minikube service prometheus-kube-prometheus-prometheus -n monitoring
 ```
 
@@ -249,40 +249,46 @@ Grafana is an open source metric analytics and visualization suite for visualizi
 
 Create secret:
 
-```commandline
+```bash
 kubectl create secret generic grafana-admin-secret \
   --from-literal=password=SecurePassword123 \
   --namespace monitoring
 ```
 
-Create a ConfigMap from json file:
+Make sure $PROMETHEUS_HOST is set by running `echo $PROMETHEUS_HOST`. If it is not set, initialize $PROMETHEUS_HOST with the actual URL. For local development run the following command:
+```bash
+export PROMETHEUS_HOST=$(minikube ip)
+```
 
-```commandline
-kubectl create configmap grafana-dashboards \
+Create the dashboard ConfigMap and datasource Secret: 
+
+```bash
+envsubst < grafana/datasource-secret.yml | kubectl create secret generic datasource-secret --from-file=datasource-secret.yml=/dev/stdin -n monitoring
+kubectl create configmap basic-metrics-dashboard \
   --from-file=grafana/dashboard_layout.json \
   -n monitoring
 ```
 
 Install Grafana chart:
 
-```commandline
+```bash
 helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
     --values grafana/values.yml \
     --namespace monitoring \
     --set service.type=NodePort \
-    --set service.nodePorts.grafana=31030 
+    --set service.nodePorts.grafana=31030
 ```
 Replace `<PROMETHEUS_HOST>` with `http://<minikube_ip>:30090` for local deployment, where `<minikube_ip>` is the actual `minikube ip`. For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana
 
 Verify deployment:
 
-```
+```bash
 kubectl get all -n monitoring
 ```
 
 To access grafana locally use following command: 
 
-```commandline
+```bash
 minikube service grafana -n monitoring
 ```
 

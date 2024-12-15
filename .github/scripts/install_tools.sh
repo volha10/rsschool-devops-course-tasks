@@ -2,14 +2,16 @@
 
 # Function to check if a required environment variable is set
 check_env_var() {
-  if [ -z "$1" ]; then
-    echo "ERROR: Environment variable $2 is not set!"
-    exit 1
-  fi
+  for var in "$@"; do
+    if [ -z "${!var}" ]; then
+      echo "ERROR: Environment variable $var is not set!"
+      exit 1
+    fi
+  done
 }
 
 # Check required environment variables.
-check_env_var "$GRAFANA_ADMIN_PASSWORD" "GRAFANA_ADMIN_PASSWORD"
+check_env_var "GRAFANA_ADMIN_PASSWORD" "PROMETHEUS_HOST"
 
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
@@ -44,7 +46,9 @@ kubectl create secret generic grafana-admin-secret \
   --from-literal=password="$GRAFANA_ADMIN_PASSWORD" \
   --namespace monitoring
 
-kubectl create configmap grafana-dashboards \
+envsubst < grafana/datasource-secret.yml | kubectl create secret generic datasource-secret --from-file=datasource-secret.yml=/dev/stdin -n monitoring
+
+kubectl create configmap basic-metrics-dashboard \
   --from-file=grafana/dashboard_layout.json \
   -n monitoring
 

@@ -3,30 +3,9 @@ admin:
 dashboardsProvider:
   enabled: true
   configMaps:
-    default: grafana-dashboards
-
+    default: basic-metrics-dashboard
 dashboardsConfigMaps:
-   - configMapName: grafana-dashboards
-     folderName: foo
+   - configMapName: basic-metrics-dashboard
      fileName: dashboard_layout.json
-
 datasources:
-  secretDefinition:
-    apiVersion: 1
-    datasources:
-      - name: Prometheus
-        type: prometheus
-        access: proxy
-        orgId: 1
-        url: http://192.168.49.2:30090
-        version: 1
-        editable: true
-        isDefault: true
-#      - name: Alertmanager
-#        uid: alertmanager
-#        type: alertmanager
-#        access: proxy
-#        orgId: 1
-#        url: http://prometheus-alertmanager.monitoring.svc.cluster.local:9093
-#        version: 1
-#        editable: true
+  secretName: datasource-secret
