@@ -49,4 +49,4 @@ jobs:
       - name: Run installation script on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} \
-            'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }} bash -s' < .github/scripts/install_tools.sh
+            'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }} PROMETHEUS_HOST=${{ secrets.PROMETHEUS_HOST }} bash -s' < .github/scripts/install_tools.sh
