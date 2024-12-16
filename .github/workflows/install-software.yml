@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       run-software-installation:
-        description: "Run Software Installation (k3s, helm, prometheus)? (yes/no)"
+        description: "Run Software Installation (k3s, helm, prometheus, grafana)? (yes/no)"
         required: true
         type: choice
         options:
