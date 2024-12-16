@@ -305,3 +305,32 @@ Log in using your Grafana admin credentials.
 
 Then go to Dashboards > New Dashboard > Import dashboard > Select your_dashboard_layout.json to import existing dashboard
 or Dashboards > New Dashboard > Add visualization to create new dashboard.
+
+### Step 3. Manual Alert Rules Creation
+#### Add Alerts for High CPU Usage
+1. Open the **CPU Usage** panel.
+2. Click the **Alert** tab.
+3. Configure the alert:
+   - **Query**:
+     ```promql
+     100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100)
+     ```
+   - **Condition**: IS ABOVE 80.
+   - **Evaluation**: Evaluate every: 1m.
+   - **For**: 5m.
+   - **Notifications**: Ensure you’ve configured a Notification Channel (e.g., email, Slack, etc.) in **Alerting > Notification Channels**.
+4. Save the alert.
+
+#### Add Alerts for RAM Usage
+1. Open the **RAM usage** panel.
+2. Click the **Alert** tab.
+3. Configure the alert:
+   - **Query**:
+     ```promql
+     (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100
+     ```
+   - **Condition**: IS ABOVE 75.
+   - **Evaluation**: Evaluate every: 1m.
+   - **For**: 5m.
+   - **Notifications**: Use the same Notification Channel as above.
+4. Save the alert.
