@@ -11,7 +11,7 @@ check_env_var() {
 }
 
 # Check required environment variables.
-check_env_var "PROMETHEUS_HOST" "GRAFANA_ADMIN_PASSWORD" "GRAFANA_SMTP_USER" "GRAFANA_SMTP_PASSWORD"
+check_env_var "PROMETHEUS_HOST" "GRAFANA_ADMIN_PASSWORD" "GRAFANA_SMTP_USER" "GRAFANA_SMTP_PASSWORD" "GRAFANA_SMTP_HOST"
 
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
@@ -58,8 +58,8 @@ kubectl create secret generic smtp-secret \
   --namespace monitoring
 
 # Install Grafana.
-helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --values grafana/values.yml \
+envsubst < grafana/values.yml | helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+    --values /dev/stdin \
     --namespace monitoring \
     --set service.type=NodePort \
     --set service.nodePorts.grafana=31030

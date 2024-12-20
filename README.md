@@ -276,11 +276,15 @@ kubectl create secret generic smtp-secret \
   --namespace monitoring
 ```
 
+```bash
+export SMTP_HOST=smtp.gmail.com:587
+```
+
 Install Grafana chart:
 
 ```bash
-helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --values grafana/values.yml \
+envsubst < grafana/values.yml | helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+    --values /dev/stdin \
     --namespace monitoring \
     --set service.type=NodePort \
     --set service.nodePorts.grafana=31030
