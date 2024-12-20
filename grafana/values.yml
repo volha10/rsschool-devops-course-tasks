@@ -1,11 +1,23 @@
 admin:
   existingSecret: grafana-admin-secret
+
 dashboardsProvider:
   enabled: true
   configMaps:
     default: basic-metrics-dashboard
+
 dashboardsConfigMaps:
    - configMapName: basic-metrics-dashboard
      fileName: dashboard_layout.json
+
 datasources:
   secretName: datasource-secret
+
+smtp:
+  enabled: true
+  host: smtp.gmail.com:587
+  fromAddress: grafana123@gmail.com
+  fromName: Grafana
+  existingSecret: smtp-secret
+  existingSecretUserKey: user
+  existingSecretPasswordKey: password

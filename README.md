@@ -269,6 +269,13 @@ kubectl create configmap basic-metrics-dashboard \
   -n monitoring
 ```
 
+```bash
+kubectl create secret generic smtp-secret \
+  --from-literal=user=your_smtp_user \
+  --from-literal=password=your_smtp_password \
+  --namespace monitoring
+```
+
 Install Grafana chart:
 
 ```bash

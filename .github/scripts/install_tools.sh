@@ -11,7 +11,7 @@ check_env_var() {
 }
 
 # Check required environment variables.
-check_env_var "GRAFANA_ADMIN_PASSWORD" "PROMETHEUS_HOST"
+check_env_var "PROMETHEUS_HOST" "GRAFANA_ADMIN_PASSWORD" "GRAFANA_SMTP_USER" "GRAFANA_SMTP_PASSWORD"
 
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
@@ -52,6 +52,12 @@ kubectl create configmap basic-metrics-dashboard \
   --from-file=grafana/dashboard_layout.json \
   -n monitoring
 
+kubectl create secret generic smtp-secret \
+  --from-literal=user="$SMTP_USER" \
+  --from-literal=password="$SMTP_PASSWORD" \
+  --namespace monitoring
+
+# Install Grafana.
 helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
     --values grafana/values.yml \
     --namespace monitoring \
