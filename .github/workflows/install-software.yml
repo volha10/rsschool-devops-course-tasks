@@ -53,5 +53,6 @@ jobs:
             GRAFANA_SMTP_USER=${{ secrets.GRAFANA_SMTP_USER }} \
             GRAFANA_SMTP_PASSWORD=${{ secrets.GRAFANA_SMTP_PASSWORD }} \
             GRAFANA_SMTP_HOST=${{ secrets.GRAFANA_SMTP_HOST }} \
+            GRAFANA_SMTP_FROM_ADDRESS=${{ secrets.GRAFANA_SMTP_FROM_ADDRESS }} \
             GRAFANA_ALERT_RECEIVER_EMAIL=${{ secrets.GRAFANA_ALERT_RECEIVER_EMAIL }} \
             bash -s' < .github/scripts/install_tools.sh

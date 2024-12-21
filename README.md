@@ -283,12 +283,6 @@ kubectl create secret generic smtp-secret \
   --namespace monitoring
 ```
 
-Create the SMTP_HOST environment variable. For example, for Gmail:
-
-```bash
-export SMTP_HOST=smtp.gmail.com:587
-```
-
 Create a ConfigMap containing the Grafana alerting configuration:
 
 ```bash
@@ -298,6 +292,14 @@ envsubst < grafana/alerts.yml | kubectl create configmap grafana-alerts \
   --from-file=alerts.yml=/dev/stdin \
   -n monitoring
 ```
+
+Create the SMTP_HOST environment variable. For example, for Gmail:
+
+```bash
+export GRAFANA_SMTP_HOST=smtp.gmail.com:587
+export GRAFANA_SMTP_FROM_ADDRESS=your_email_adsress
+```
+
 
 Install Grafana:
 ```bash
