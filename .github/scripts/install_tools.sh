@@ -62,8 +62,8 @@ kubectl create configmap basic-metrics-dashboard \
   -n monitoring
 
 kubectl create secret generic smtp-secret \
-  --from-literal=user="$SMTP_USER" \
-  --from-literal=password="$SMTP_PASSWORD" \
+  --from-literal=user="$GRAFANA_SMTP_USER" \
+  --from-literal=password="$GRAFANA_SMTP_PASSWORD" \
   --namespace monitoring
 
 envsubst < grafana/alerts.yml | kubectl create configmap grafana-alerts \

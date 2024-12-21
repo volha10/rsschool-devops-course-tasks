@@ -336,7 +336,7 @@ Log in using your Grafana admin credentials.
 Then go to Dashboards > New Dashboard > Import dashboard > Select your_dashboard_layout.json to import existing dashboard
 or Dashboards > New Dashboard > Add visualization to create new dashboard.
 
-### Step 2: Create a Notification Channel
+### Step 3: Create a Notification Channel
 #### Option 1: Create via Grafana UI
 1. Navigate to Alerting > Notification channels.
 2. Click on Add channel.
@@ -348,7 +348,7 @@ or Dashboards > New Dashboard > Add visualization to create new dashboard.
 5. Click Test to ensure notifications work as expected.
 6. Click Save.
 
-### Step 3. Alert Rules Creation
+### Step 4. Alert Rules Creation
 #### Add Alerts for High CPU Usage
 ##### Option 1: Create via Grafana UI
 1. Open the **CPU Usage** panel.
@@ -378,3 +378,12 @@ or Dashboards > New Dashboard > Add visualization to create new dashboard.
    - **For**: 5m.
    - **Notifications**: Use the same Notification Channel as above.
 4. Save the alert.
+
+#### Test Alerts 
+```commandline
+sudo amazon-linux-extras install epel -y
+sudo yum install stress -y
+
+stress --cpu 2 --timeout 300
+stress --vm 1 --vm-bytes 400M --timeout 300
+```
