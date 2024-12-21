@@ -21,3 +21,6 @@ smtp:
   existingSecret: smtp-secret
   existingSecretUserKey: user
   existingSecretPasswordKey: password
+
+alerting:
+  configMapName: grafana-alerts
