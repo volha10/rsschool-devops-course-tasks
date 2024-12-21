@@ -1,6 +1,6 @@
-# Terraform AWS Project
+# AWS DevOps Project
 
-This project contains Terraform configurations for deploying infrastructure on AWS.
+This project includes Terraform configurations for deploying infrastructure and software installation setups for K3s, Helm, Prometheus, and Grafana on AWS.
 
 ## Prerequisites
 
