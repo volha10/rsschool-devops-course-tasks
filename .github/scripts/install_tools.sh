@@ -11,7 +11,14 @@ check_env_var() {
 }
 
 # Check required environment variables.
-check_env_var "GRAFANA_ADMIN_PASSWORD" "PROMETHEUS_HOST"
+check_env_var \
+  "PROMETHEUS_HOST" \
+  "GRAFANA_ADMIN_PASSWORD" \
+  "GRAFANA_SMTP_USER" \
+  "GRAFANA_SMTP_PASSWORD" \
+  "GRAFANA_SMTP_HOST" \
+  "GRAFANA_SMTP_FROM_ADDRESS" \
+  "GRAFANA_ALERT_RECEIVER_EMAIL"
 
 # Install k3s.
 curl -sfL https://get.k3s.io | sh -
@@ -40,20 +47,32 @@ helm upgrade --install prometheus oci://registry-1.docker.io/bitnamicharts/kube-
 
 sleep 100
 
-kubectl get all -n monitoring
+kubectl get pods -n monitoring
 
 kubectl create secret generic grafana-admin-secret \
   --from-literal=password="$GRAFANA_ADMIN_PASSWORD" \
   --namespace monitoring
 
-envsubst < grafana/datasource-secret.yml | kubectl create secret generic datasource-secret --from-file=datasource-secret.yml=/dev/stdin -n monitoring
+envsubst < grafana/datasources.yml | kubectl create secret generic datasource-secret \
+  --from-file=datasources.yml=/dev/stdin \
+  -n monitoring
 
 kubectl create configmap basic-metrics-dashboard \
   --from-file=grafana/dashboard_layout.json \
   -n monitoring
 
-helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --values grafana/values.yml \
+kubectl create secret generic smtp-secret \
+  --from-literal=user="$GRAFANA_SMTP_USER" \
+  --from-literal=password="$GRAFANA_SMTP_PASSWORD" \
+  --namespace monitoring
+
+envsubst < grafana/alerts.yml | kubectl create configmap grafana-alerts \
+  --from-file=alerts.yml=/dev/stdin \
+  -n monitoring
+
+# Install Grafana.
+envsubst < grafana/values.yml | helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+    --values /dev/stdin \
     --namespace monitoring \
     --set service.type=NodePort \
     --set service.nodePorts.grafana=31030

@@ -1,0 +1,9 @@
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://$PROMETHEUS_HOST:30090
+    version: 1
+    editable: true
+    isDefault: true

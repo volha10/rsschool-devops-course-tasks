@@ -1,6 +1,6 @@
-# Terraform AWS Project
+# AWS DevOps Project
 
-This project contains Terraform configurations for deploying infrastructure on AWS.
+This project includes Terraform configurations for deploying infrastructure and software installation setups for K3s, Helm, Prometheus, and Grafana on AWS.
 
 ## Prerequisites
 
@@ -263,27 +263,57 @@ export PROMETHEUS_HOST=$(minikube ip)
 Create the dashboard ConfigMap and datasource Secret: 
 
 ```bash
-envsubst < grafana/datasource-secret.yml | kubectl create secret generic datasource-secret --from-file=datasource-secret.yml=/dev/stdin -n monitoring
+envsubst < grafana/datasources.yml | kubectl create secret generic datasource-secret \
+  --from-file=datasources.yml=/dev/stdin \
+  -n monitoring
+
 kubectl create configmap basic-metrics-dashboard \
   --from-file=grafana/dashboard_layout.json \
   -n monitoring
 ```
 
-Install Grafana chart:
+### Step 2. Install Grafana chart
+
+Create a Secret containing SMTP credentials (user and password):
 
 ```bash
-helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --values grafana/values.yml \
+kubectl create secret generic smtp-secret \
+  --from-literal=user=your_smtp_user \
+  --from-literal=password=your_smtp_password \
+  --namespace monitoring
+```
+
+Create a ConfigMap containing the Grafana alerting configuration:
+
+```bash
+export GRAFANA_ALERT_RECEIVER_EMAIL=yor_email_address
+
+envsubst < grafana/alerts.yml | kubectl create configmap grafana-alerts \
+  --from-file=alerts.yml=/dev/stdin \
+  -n monitoring
+```
+
+Create the SMTP_HOST environment variable. For example, for Gmail:
+
+```bash
+export GRAFANA_SMTP_HOST=smtp.gmail.com:587
+export GRAFANA_SMTP_FROM_ADDRESS=your_email_adsress
+```
+
+
+Install Grafana:
+```bash
+envsubst < grafana/values.yml | helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+    --values /dev/stdin \
     --namespace monitoring \
     --set service.type=NodePort \
     --set service.nodePorts.grafana=31030
 ```
-Replace `<PROMETHEUS_HOST>` with `http://<minikube_ip>:30090` for local deployment, where `<minikube_ip>` is the actual `minikube ip`. For more information see https://github.com/bitnami/charts/tree/main/bitnami/prometheus#integrate-prometheus-with-grafana
 
 Verify deployment:
 
 ```bash
-kubectl get all -n monitoring
+kubectl get pods -n monitoring
 ```
 
 To access grafana locally use following command: 
@@ -303,4 +333,57 @@ Replace <grafana-host> and <port> with your Grafana's host (e.g., node IP) and p
 
 Log in using your Grafana admin credentials.
 
-Then go to Dashboards > New Dashboard > Import dashboard > Select dashboard_layout.json.
+Then go to Dashboards > New Dashboard > Import dashboard > Select your_dashboard_layout.json to import existing dashboard
+or Dashboards > New Dashboard > Add visualization to create new dashboard.
+
+### Step 3: Create a Notification Channel
+#### Option 1: Create via Grafana UI
+1. Navigate to Alerting > Notification channels.
+2. Click on Add channel.
+3. Fill in the details:
+   - Name: Enter a name for the channel.
+   - Type: Select the type of notification channel (Email).
+   - Settings: Add recipient email addresses.
+4. Configure Severity Levels (e.g., send only alerts with a severity of Warning or Critical).
+5. Click Test to ensure notifications work as expected.
+6. Click Save.
+
+### Step 4. Alert Rules Creation
+#### Add Alerts for High CPU Usage
+##### Option 1: Create via Grafana UI
+1. Open the **CPU Usage** panel.
+2. Click the **Alert** tab.
+3. Configure the alert:
+   - **Query**:
+     ```promql
+     100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100)
+     ```
+   - **Condition**: IS ABOVE 80.
+   - **Evaluation**: Evaluate every: 1m.
+   - **For**: 5m.
+   - **Notifications**: Select the notification channel configured above.
+4. Save the alert.
+
+#### Add Alerts for High Memory Usage
+##### Option 1: Create via Grafana UI
+1. Open the **RAM usage** panel.
+2. Click the **Alert** tab.
+3. Configure the alert:
+   - **Query**:
+     ```promql
+     (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100
+     ```
+   - **Condition**: IS ABOVE 75.
+   - **Evaluation**: Evaluate every: 1m.
+   - **For**: 5m.
+   - **Notifications**: Use the same Notification Channel as above.
+4. Save the alert.
+
+#### Test Alerts 
+```commandline
+sudo amazon-linux-extras install epel -y
+sudo yum install stress -y
+
+stress --cpu 2 --timeout 300
+stress --vm 1 --vm-bytes 400M --timeout 300
+```

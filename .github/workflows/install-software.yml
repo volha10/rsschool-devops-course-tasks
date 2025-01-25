@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       run-software-installation:
-        description: "Run Software Installation (k3s, helm, prometheus)? (yes/no)"
+        description: "Run Software Installation (k3s, helm, prometheus, grafana)? (yes/no)"
         required: true
         type: choice
         options:
@@ -36,7 +36,7 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Backup previous grafana values
+      - name: Backup previous grafana folder
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} \
             'ls /home/ec2-user/grafana && mv /home/ec2-user/grafana /home/ec2-user/grafana_$(date +\%Y\%m\%d\%H\%M\%S).yml  || echo "Grafana folder not found, skipping backup"'
@@ -45,8 +45,14 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./grafana ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }}:/home/ec2-user/grafana
 
-
       - name: Run installation script on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.AWS_EC2_PUBLIC_IP }} \
-            'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }} PROMETHEUS_HOST=${{ secrets.PROMETHEUS_HOST }} bash -s' < .github/scripts/install_tools.sh
+            'PROMETHEUS_HOST=${{ secrets.PROMETHEUS_HOST }} \
+            GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }} \
+            GRAFANA_SMTP_USER=${{ secrets.GRAFANA_SMTP_USER }} \
+            GRAFANA_SMTP_PASSWORD=${{ secrets.GRAFANA_SMTP_PASSWORD }} \
+            GRAFANA_SMTP_HOST=${{ secrets.GRAFANA_SMTP_HOST }} \
+            GRAFANA_SMTP_FROM_ADDRESS=${{ secrets.GRAFANA_SMTP_FROM_ADDRESS }} \
+            GRAFANA_ALERT_RECEIVER_EMAIL=${{ secrets.GRAFANA_ALERT_RECEIVER_EMAIL }} \
+            bash -s' < .github/scripts/install_tools.sh
